@@ -23,8 +23,8 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "Invalid IP address"}), 400
         if exists(redis_connection, ip):
             return json.dumps({"error": "IP address already exists"}), 400
-        location_data = f"information about the location for the IP address {ip}"
-        set(redis_connection, ip, location_data)
+        location_data = {"location": "unknown", "ip": ip}
+        set(redis_connection, ip, json.dumps(location_data))
         return json.dumps({ip: location_data}), 201
 
     @raise_function
@@ -36,9 +36,10 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "IP address not found"}), 404
         return_information = get(redis_connection, ip)
         try:
-            return_information = return_information.decode("utf-8")
-        except AttributeError:
-            return "Problem with decoding the data", 500
+            print(return_information)
+            return_information = json.loads(return_information)
+        except Exception:
+            return json.dumps({"error": "Invalid data"}), 500
         return json.dumps({ip: return_information}), 200
 
     @raise_function
@@ -50,3 +51,17 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "IP address not found"}), 404
         delete(redis_connection, ip)
         return "", 204
+
+    @raise_function
+    @app.route("/address/<ip>", methods=["PUT"])
+    def put_ip(ip):
+        if not isIP(ip):
+            return json.dumps({"error": "Invalid IP address"}), 400
+        if not (data := request.get_json(force=True)):
+            return json.dumps({"error": "No data in JSON format provided"}), 400
+        try:
+            data_to_put = json.dumps(data)
+        except Exception:
+            return json.dumps({"error": "Invalid data"}), 400
+        set(redis_connection, ip, data_to_put)
+        return json.dumps(data), 200
