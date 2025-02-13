@@ -6,7 +6,7 @@ from utils.ip_utils import isIP
 from utils.redis_utils import delete, raise_function, get, exists, set
 
 
-def configure_routes(app: Flask, redis_connection: redis.Redis):
+def configure_address_routes(app: Flask, redis_connection: redis.Redis):
 
     @app.route("/hello", methods=["GET"])
     def get_hello():
@@ -15,7 +15,7 @@ def configure_routes(app: Flask, redis_connection: redis.Redis):
     @raise_function
     @app.route("/address", methods=["POST"])
     def add_ip():
-        if not (data := request.get_json()):
+        if not (data := request.get_json(force=True)):
             return json.dumps({"error": "No data provided"}), 400
         if not (ip := data.get("ip")):
             return json.dumps({"error": "No IP provided"}), 400
@@ -32,19 +32,21 @@ def configure_routes(app: Flask, redis_connection: redis.Redis):
     def get_ip(ip):
         if not isIP(ip):
             return json.dumps({"error": "Invalid IP address"}), 400
-        ip_exists = exists(redis_connection, ip)
-        if not ip_exists:
+        if not exists(redis_connection, ip):
             return json.dumps({"error": "IP address not found"}), 404
         return_information = get(redis_connection, ip)
-        return json.dumps({ip: return_information}), 201
+        try:
+            return_information = return_information.decode("utf-8")
+        except AttributeError:
+            return "Problem with decoding the data", 500
+        return json.dumps({ip: return_information}), 200
 
     @raise_function
     @app.route("/address/<ip>", methods=["DELETE"])
     def delete_ip(ip):
         if not isIP(ip):
             return json.dumps({"error": "Invalid IP address"}), 400
-        ip_exists = exists(redis_connection, ip)
-        if not ip_exists:
+        if not exists(redis_connection, ip):
             return json.dumps({"error": "IP address not found"}), 404
         delete(redis_connection, ip)
         return "", 204

@@ -22,7 +22,7 @@ class TestIsIP:
         assert isIP(ip) == expected
 
 
-class TestRedisRaiseFunction:
+class TestRaiseFunction:
     def test_positive_path(self):
         def func():
             return "success"
