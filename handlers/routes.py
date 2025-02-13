@@ -53,10 +53,15 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
         return "", 204
 
     @raise_function
-    @app.route("/address/<ip>", methods=["PUT"])
-    def put_ip(ip):
+    @app.route("/address/<ip>", methods=["PUT", "PATCH"])
+    def put_patch_ip(ip):
         if not isIP(ip):
             return json.dumps({"error": "Invalid IP address"}), 400
+        return_code = 200
+        if not exists(redis_connection, ip):
+            if request.method == "PATCH":
+                return json.dumps({"error": "IP address not found"}), 404
+            return_code = 201
         if not (data := request.get_json(force=True)):
             return json.dumps({"error": "No data in JSON format provided"}), 400
         try:
@@ -64,4 +69,4 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
         except Exception:
             return json.dumps({"error": "Invalid data"}), 400
         set(redis_connection, ip, data_to_put)
-        return json.dumps(data), 200
+        return json.dumps(data), return_code
