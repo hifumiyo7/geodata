@@ -8,10 +8,6 @@ from utils.redis_utils import delete, raise_function, get, exists, set
 
 def configure_address_routes(app: Flask, redis_connection: redis.Redis):
 
-    @app.route("/hello", methods=["GET"])
-    def get_hello():
-        return "hello"
-
     @raise_function
     @app.route("/address", methods=["POST"])
     def add_ip():
@@ -59,6 +55,7 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "Invalid IP address"}), 400
         return_code = 200
         if not exists(redis_connection, ip):
+            print(request.method)
             if request.method == "PATCH":
                 return json.dumps({"error": "IP address not found"}), 404
             return_code = 201
