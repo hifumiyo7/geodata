@@ -52,8 +52,8 @@ python -m pytest
 1. Refactor the functions to simplify all the checks that proper information is in the call.
 2. Create simplest e2e tests. This in first step could be just a Postman collection, sending the data, receiving the response, and checking the separate endpoints in order to ensure that there is no data returning on non-existent keys.
 3. Current code assumes to check IP first, URL second. If there is a valid URL after wrong IP, it will fail.
-4. Current code works based on full URL addresses, but because of ip-api it looks up based on netloc (which is enough). This will not work with short URLs
+4. Current code works based on full URL addresses, but because of ip-api it looks up based on netloc (which is enough). This will not work with short URLs.
 
 ## Contact
 
-For any questions or suggestions, please contact [your email].
+For any questions or suggestions, please contact luczkiewiczjan@gmail.com .
