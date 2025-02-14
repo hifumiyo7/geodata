@@ -54,6 +54,7 @@ python -m pytest
 3. Current code assumes to check IP first, URL second. If there is a valid URL after wrong IP, it will fail.
 4. Current code works based on full URL addresses, but because of ip-api it looks up based on netloc (which is enough). This will not work with short URLs.
 5. Usage of ip-api as lookup site limits this to 45 requests (45 new keys) per minute.
+6. Data dump is now included in docker file, in normal functioning it would not be, as it is just used to pre-load data to Redis.
 
 ## Endpoints
 
