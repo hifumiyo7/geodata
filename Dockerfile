@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.13
 WORKDIR /python-app
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_APP=app.py

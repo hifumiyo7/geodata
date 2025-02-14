@@ -16,6 +16,14 @@ def client(monkeypatch):
 
 
 @pytest.fixture
+def request_data(monkeypatch):
+    monkeypatch.setattr(
+        "requests.get",
+        lambda x: {"status_code": 200, "json": lambda: {"area": "new area"}},
+    )
+
+
+@pytest.fixture
 def client_with_failing_redis_exists(monkeypatch):
     def failing_set(*args, **kwargs):
         raise redis.exceptions.ConnectionError("Failed to set key")

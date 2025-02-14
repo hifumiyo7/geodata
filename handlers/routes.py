@@ -1,13 +1,13 @@
 from flask import Flask, request, abort, Response
 import json
 import redis
+import requests
 
 from utils.ip_utils import isIP
 from utils.redis_utils import delete, raise_function, get, exists, set
 
 
 def configure_address_routes(app: Flask, redis_connection: redis.Redis):
-
     @raise_function
     @app.route("/address", methods=["POST"])
     def add_ip():
@@ -19,9 +19,24 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "Invalid IP address"}), 400
         if exists(redis_connection, ip):
             return json.dumps({"error": "IP address already exists"}), 400
-        location_data = {"location": "unknown", "ip": ip}
-        set(redis_connection, ip, json.dumps(location_data))
-        return json.dumps({ip: location_data}), 201
+        url = f"http://ip-api.com/json/{ip}"
+        try:
+            response = requests.get(url)
+            response_json = response.json()
+            if response.status_code != 200:
+                return (
+                    json.dumps(
+                        {
+                            "error": "Error fetching data",
+                            "error_information": response.json(),
+                        }
+                    ),
+                    500,
+                )
+        except Exception as e:
+            return json.dumps({"error": "Error fetching data"}), 500
+        set(redis_connection, ip, json.dumps(response_json))
+        return json.dumps({ip: response_json}), 201
 
     @raise_function
     @app.route("/address/<ip>", methods=["GET"])
