@@ -1,5 +1,6 @@
 flask==3.1.0
 pytest==6.2.4
 requests
+validators
 python-dotenv
 redis

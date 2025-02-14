@@ -1,25 +1,6 @@
 import pytest
 import redis.exceptions
-from utils.ip_utils import isIP
 from utils.redis_utils import raise_function, redis_wrapping_function
-
-
-@pytest.mark.parametrize(
-    "ip, expected",
-    [
-        ("1.1.1.1", True),
-        ("1.2.46.76", True),
-        ("1.1.1", False),
-        ("1.1.1.256", False),
-        ("1.1.1.-1", False),
-        ("1.b.c.d", False),
-        ("", False),
-        ("aa", False),
-    ],
-)
-class TestIsIP:
-    def test_isIP(self, ip, expected):
-        assert isIP(ip) == expected
 
 
 class TestRaiseFunction:

@@ -20,12 +20,12 @@ class TestPatchAddress:
     def test_patch_ip_new_ip(self, client):
         response = client.patch("/address/2.2.2.2", json={"area": "new area"})
         assert response.status_code == 404
-        assert response.get_json(force=True) == {"error": "IP address not found"}
+        assert response.get_json(force=True) == {"error": "IP or URL address not found"}
 
     def test_patch_ip_invalid_ip(self, client):
         response = client.patch("/address/invalid", json={"area": "new area"})
         assert response.status_code == 400
-        assert response.get_json(force=True) == {"error": "Invalid IP address"}
+        assert response.get_json(force=True) == {"error": "Invalid IP or URL address"}
 
     def test_put_ip_no_data(self, client):
         response = client.patch("/address/1.1.1.1", json={})

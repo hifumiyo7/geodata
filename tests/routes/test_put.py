@@ -24,7 +24,7 @@ class TestPutAddress:
     def test_put_ip_invalid_ip(self, client):
         response = client.put("/address/invalid", json={"area": "new area"})
         assert response.status_code == 400
-        assert response.get_json(force=True) == {"error": "Invalid IP address"}
+        assert response.get_json(force=True) == {"error": "Invalid IP or URL address"}
 
     def test_put_ip_no_data(self, client):
         response = client.put("/address/1.1.1.1", json={})
