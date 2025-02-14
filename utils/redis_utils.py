@@ -48,3 +48,8 @@ def get(r: redis.Redis, key: str):
 @redis_wrapping_function
 def delete(r: redis.Redis, key: str):
     return r.delete(key)
+
+
+@redis_wrapping_function
+def keys(r: redis.Redis):
+    return r.keys()

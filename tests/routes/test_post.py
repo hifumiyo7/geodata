@@ -1,5 +1,4 @@
 class TestPostAddress:
-
     def test_add_ip(self, client):
         response = client.post("/address", json={"ip": "100.1.1.1"})
         assert response.status_code == 201
@@ -29,6 +28,14 @@ class TestPostAddress:
         response = client.post("/address", json={"ip": "111.1.1.1"})
         assert response.status_code == 400
         assert response.get_json(force=True) == {"error": "Address already exists"}
+
+    def test_add_ip_invalid_address(self, client):
+        response = client.post("/address", json={"address": "http://invalid"})
+        assert response.status_code == 400
+
+    def test_add_ip_valid_address(self, client):
+        response = client.post("/address", json={"address": "http://www.valid.com/"})
+        assert response.status_code == 201
 
     def test_add_ip_redis_failure(self, client_with_failing_redis_exists):
         response = client_with_failing_redis_exists.post(

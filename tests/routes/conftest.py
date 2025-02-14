@@ -15,12 +15,18 @@ def client(monkeypatch):
     return app.test_client()
 
 
-@pytest.fixture
+class MockResponse:
+    status_code = 200
+
+    @staticmethod
+    def json():
+        return {"area": "new area"}
+
+
+@pytest.fixture(autouse=True, scope="function")
 def request_data(monkeypatch):
-    monkeypatch.setattr(
-        "requests.get",
-        lambda x: {"status_code": 200, "json": lambda: {"area": "new area"}},
-    )
+
+    monkeypatch.setattr("requests.get", lambda x: MockResponse())
 
 
 @pytest.fixture
