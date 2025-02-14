@@ -97,11 +97,11 @@ def configure_address_routes(app: Flask, redis_connection: redis.Redis):
             return json.dumps({"error": "Invalid IP or URL address"}), 400
         return_code = 200
         if not exists(redis_connection, address):
-            existing_data = {}
             if request.method == "PATCH":
                 return json.dumps({"error": "IP or URL address not found"}), 404
             return_code = 201
-        else:
+        existing_data = {}
+        if request.method == "PATCH":
             existing_data = json.loads(get(redis_connection, address))
         if not (data := request.get_json(force=True)):
             return json.dumps({"error": "No data in JSON format provided"}), 400
